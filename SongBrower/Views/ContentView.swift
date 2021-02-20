@@ -49,8 +49,12 @@ struct ContentView: View {
     //MARK: Function
     func fetchSongResult() {
         
+        //Sanitize the research input
+        let input = searchText.lowercased().replacingOccurrences(of: " ", with: "+")
+        
+        
         // Set the address of the JSON endpoint
-        let url = URL(string: "https://itunes.apple.com/search?term=taylor+swift&entity=song")!
+        let url = URL(string: "https://itunes.apple.com/search?term=\(input)&entity=song")!
 
         // Configure a URLRequest instance
         // Defines what type of request will be sent to the address noted above
@@ -115,6 +119,22 @@ struct ContentView: View {
                 }
 
             } else {
+                
+                //Search text was given, results obtained
+                //Show the list of result
+                //Keypath of \.trackid tells us the list view what property to use
+                List(songs, id: \.trackId ) {currentSong in
+                    
+                    VStack {
+                        
+                        Text(currentSong.trackName)
+                        
+                        Text(currentSong.artistName)
+                            .font(.caption)
+                        
+                    }
+                    
+                }
 
                 print("Could not decode JSON into an instance of the searchResult structure.")
 
