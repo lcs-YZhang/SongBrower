@@ -47,13 +47,9 @@ struct ContentView: View {
                     
                     VStack(alignment: .leading) {
                         
-                        Text(currentSong.trackName)
-                        
-                        Text(currentSong.artistName)
-                            .font(.caption)
-                        
-                    }
+                        SimpleListItemView(title: currentSong.trackName, caption: currentSong.artistName)
                     
+                    }
                 }
                 
             }
