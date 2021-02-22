@@ -39,12 +39,26 @@ struct ContentView: View {
                 Spacer()
                 
             } else {
-            
-                //Push the search bar to the top
-                Spacer()
-         }
-      }
-   }
+                
+                //Search text was given, results obtained
+                //Show the list of result
+                //Keypath of \.trackid tells us the list view what property to use
+                List(songs, id: \.trackId ) {currentSong in
+                    
+                    VStack(alignment: .leading) {
+                        
+                        Text(currentSong.trackName)
+                        
+                        Text(currentSong.artistName)
+                            .font(.caption)
+                        
+                    }
+                    
+                }
+                
+            }
+        }
+    }
     
     //MARK: Function
     func fetchSongResult() {
@@ -55,20 +69,20 @@ struct ContentView: View {
         
         // Set the address of the JSON endpoint
         let url = URL(string: "https://itunes.apple.com/search?term=\(input)&entity=song")!
-
+        
         // Configure a URLRequest instance
         // Defines what type of request will be sent to the address noted above
         var request = URLRequest(url: url)
         request.setValue("application/json",
                          forHTTPHeaderField: "Accept")
         request.httpMethod = "GET"
-
+        
         // Run the request on a background thread and process the result.
         // NOTE: This occurs asynchronously.
         //       That means we don't know precisely when the request will
         //       complete.
         URLSession.shared.dataTask(with: request) { data, response, error in
-
+            
             // When the request *does* complete, there are three parameters
             // containing data that are created:
             //
@@ -80,11 +94,11 @@ struct ContentView: View {
             //
             // error
             // An error object that indicates why the request failed, or nil if the request was successful.
-
-
+            
+            
             // Verify that some data was actually returned
             guard let SongData = data else {
-
+                
                 // When no data is returned, provide a descriptive error
                 //
                 // error?.localizedDescription is an example of "optional chaining"
@@ -95,56 +109,40 @@ struct ContentView: View {
                 // This means that when the error object *is* nil, a default string of
                 // "Unknown error" will be provided
                 print("No data in response: \(error?.localizedDescription ?? "Unknown error")")
-
+                
                 // Don't continue past this point
                 return
-
+                
             }
-
+            
             // DEBUG: See what raw JSON data was returned from the server
             //print(String(data: jokeData, encoding: .utf8)!)
-
+            
             // Attempt to decode the JSON into an instance of the SearchResult structure
             if let decodedSongData = try? JSONDecoder().decode(SearchResult.self, from: SongData) {
-
+                
                 // DEBUG:
                 print("Song data decoded from JSON successfully")
-
+                
                 // Now, update the UI on the main thread
                 DispatchQueue.main.async {
-
+                    
                     // Assign the result to the Songs property
                     songs = decodedSongData.results
-
+                    
                 }
-
+                
             } else {
                 
-                //Search text was given, results obtained
-                //Show the list of result
-                //Keypath of \.trackid tells us the list view what property to use
-                List(songs, id: \.trackId ) {currentSong in
-                    
-                    VStack {
-                        
-                        Text(currentSong.trackName)
-                        
-                        Text(currentSong.artistName)
-                            .font(.caption)
-                        
-                    }
-                    
-                }
-
                 print("Could not decode JSON into an instance of the searchResult structure.")
-
+                
             }
-
+            
         }.resume()
         // NOTE: Invoking the resume() function
         // on the dataTask closure is key. The request will not
         // run, otherwise.
-
+        
     }
 }
 
