@@ -45,15 +45,16 @@ struct ContentView: View {
                 //Keypath of \.trackid tells us the list view what property to use
                 List(songs, id: \.trackId ) {currentSong in
                     
-                    VStack(alignment: .leading) {
+                    NavigationLink(destination: SongDetailView(song: currentSong)) {
                         
-                        SimpleListItemView(title: currentSong.trackName, caption: currentSong.artistName)
-                    
+                        SimpleListItemView(title: currentSong.trackName,
+                                           caption: currentSong.artistName)
+                        
                     }
                 }
-                
             }
         }
+        .navigationTitle("Song Browser")
     }
     
     //MARK: Function
@@ -140,6 +141,7 @@ struct ContentView: View {
         // run, otherwise.
         
     }
+
 }
 
 
